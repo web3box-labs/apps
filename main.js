@@ -13,6 +13,8 @@ function createWindow() {
     minWidth: 1200,
     minHeight: 800,
     // frame:false,
+    backgroundColor: '#111315',
+    icon: './public/web3box.ico',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       webviewTag:true,

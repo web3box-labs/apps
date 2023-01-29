@@ -293,6 +293,20 @@ module.exports = function (webpackEnv) {
       ],
     },
     resolve: {
+      fallback: {
+        "fs": false,
+        "http":false,
+        "https":false,
+        "path": false,
+        "os": false,
+        "crypto": false,
+        "stream": false,
+        "tls": false,
+        "zlib": false,
+        "net": false, 
+        "tty": false,
+        "url": false
+       },
       // This allows you to set a fallback for where webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"
       // if there are any conflicts. This matches Node resolution mechanism.
@@ -312,6 +326,8 @@ module.exports = function (webpackEnv) {
       alias: {
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
+        // 'buffer':'buffer',
+        'stream$': 'stream-browserify',
         'react-native': 'react-native-web',
         // Allows for better profiling with ReactDevTools
         ...(isEnvProductionProfile && {
