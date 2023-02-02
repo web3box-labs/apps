@@ -1,7 +1,7 @@
 export const knownSubstrate = [
     {
       decimals: 10000000000,
-      displayName: 'Polkadot Relay Chain',
+      displayName: 'Polkadot',
       network: 'polkadot',
       prefix: 0,
       standardAccount: '*25519',
@@ -13,7 +13,7 @@ export const knownSubstrate = [
     },
     {
       decimals: 1000000000000,
-      displayName: 'Kusama Relay Chain',
+      displayName: 'Kusama',
       network: 'kusama',
       prefix: 2,
       standardAccount: '*25519',
@@ -60,6 +60,29 @@ export const knownSubstrate = [
       genesis: ['0x9eb76c5184c4ab8679d2d5d819fdf90b9c001403e9e17da2e14b6d8aec4029c6'],
       rpc:'wss://rpc.astar.network'
     },
+    {
+      decimals: 1000000000000,
+      displayName: 'Litentry',
+      network: 'litentry',
+      prefix: 31,
+      standardAccount: '*1284',
+      symbols: ['LIT'],
+      website: 'https://astar.network/',
+      genesis: ['0x2fc8bb6ed7c0051bdcf4866c322ed32b6276572713607e3297ccf411b8f14aa9'],
+      rpc:'wss://rpc.litentry-parachain.litentry.io'
+    },
+    {
+      decimals: 1000000000000,
+      displayName: 'Phala',
+      network: 'Phala',
+      prefix: 30,
+      standardAccount: '*1284',
+      symbols: ['PHA'],
+      website: 'https://astar.network/',
+      genesis: ['0x1bb969d85965e4bb5a651abbedf21a54b6b31a21f66b5401cc3f1e286268d736'],
+      rpc:'wss://api.phala.network/ws'
+    },
+    
     // {
     //   decimals: 1000000000000,
     //   displayName: 'Rococo Test',

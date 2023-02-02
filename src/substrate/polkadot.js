@@ -186,6 +186,12 @@ export async function queryBalance(address,chain){
   return r;
 }
 
+export async function queryHttpBalance(address,chain){
+  polkadotApi = await ApiPromise.create({ provider:new HttpProvider(chain) });
+  let r = await polkadotApi.query.system.account(address);
+  return r;
+}
+
 // transfer 
 export async function transfer(from,passwd,to,balance,chain){
   const pair = _uiKeyring.getPair(from);

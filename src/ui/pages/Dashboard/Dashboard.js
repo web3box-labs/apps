@@ -1,13 +1,15 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useRef } from "react";
 import './Dashboard.scss';
 import { connect ,useDispatch, useSelector} from 'react-redux';
 import { useNavigate,useLocation } from 'react-router-dom';
 import Talisman from '@talismn/api'
-import {parseTime,queryBalance,formatAddressByChain} from "../../../substrate/polkadot.js";
+import {parseTime,queryBalance,queryHttpBalance,formatAddressByChain} from "../../../substrate/polkadot.js";
 import {tokenPrice} from "../../../substrate/risk.js";
 import {knownSubstrate} from '../../../substrate/network'
 import { setAccount,setSeed,setAddress,setethAddress } from '../../store/action';
-import { Button ,Select,Input,Modal,messag,Card} from 'antd';
+import { Button ,Select,Input,Modal,messag,Card,Spin} from 'antd';
+import {
+    cloneDeep} from 'lodash';
 import dashboard_img from '../../images/dashboard.png';
 import avatar_img from '../../images/avatar.png';
 import icon_1_img from '../../images/icon_1.png';
@@ -24,7 +26,7 @@ import icon_fil_img from '../../images/icon_fil.png';
 import recent_trans_img from '../../images/recent_trans.png';
 import btn_more_img from  '../../images/btn_more.png';
 import market_head_img from  '../../images/market_head.png';
-
+import * as echarts from 'echarts';
 import ReactEcharts from 'echarts-for-react';
 const { Option } = Select;
 const { TransferService }  = require("../../store/transfer");
@@ -41,7 +43,7 @@ function Dashboard(props) {
     const [inputPrice, setInputPrice] = useState(0);
     const [outToken, setOutToken] = useState(0);
     const [outPrice, setOutPrice] = useState(0);
-
+    const [loading, setLoading] = useState(true);
     const [dotUsdt, setDotUsdt] = useState(0);
     const [ksmUsdt, setKsmUsdt] = useState(0);
     const [acaUsdt, setAcaUsdt] = useState(0);
@@ -49,10 +51,31 @@ function Dashboard(props) {
     const [astrUsdt, setastrUsdt] = useState(0);
     const [phaUsdt, setphaUsdt] = useState(0);
     const [litUsdt, setlitUsdt] = useState(0);
+    const [options, setOptions] = useState({});
     const [data, setData] = useState([]);
     const [record, setRecord] = useState([]);
-    const [tokenStroe, setTokenStroe] = useState({});
+    // const [tokenStroe, setTokenStroe] = useState({});
     const [usdtsStroe, setUsdtsStroe] = useState({});
+
+
+    const symbols = {
+        "0":'DOT',
+        "2":'KSM',
+        "10":'ACA', 
+        "1284":'GLMR',
+        "5":'ASTR',
+        "30":'PHA',
+        "31":'LIT'
+    };
+    const rpcs = {
+        "0":'wss://rpc.polkadot.io',
+        "2":'wss://kusama-rpc.dwellir.com',
+        "10":'wss://acala.polkawallet.io', 
+        "1284":'wss://moonbeam.public.blastapi.io',
+        "5":'wss://rpc.astar.network',
+        "30":'wss://api.phala.network/ws',
+        "31":'wss://rpc.litentry-parachain.litentry.io'
+    };
 
     const decimals = {
         "DOT":10000000000,
@@ -88,61 +111,67 @@ function Dashboard(props) {
         Navigate('/WalletHome');
     }
 
+    const config = {
+        tooltip: {
+           trigger: 'item',
+
+         },
+         legend: {
+           orient: 'vertical',
+           left: 'left'
+         },
+         series: [
+           {
+             name: '',
+             type: 'pie',
+             radius: '40%',
+             label:{
+               normal :{
+                   show:true,
+                   position:'inside',
+                   formatter:'{d}%'
+               }
+             },
+             data:[],
+             left: 100,
+             top:-80,
+             emphasis: {
+               itemStyle: {
+                 shadowBlur: 10,
+                 shadowOffsetX: 0,
+                 shadowColor: 'rgba(0, 0, 0, 0.5)'
+               }
+             }
+           }
+         ]
+}
+
     useEffect(  ()=>{
         if( typeof account == 'undefined' || account == ''){
             Navigate('/WalletConfirm');
         }
-        getBalance();     
-    },[address])
+        getTransList();     
+    },[address,totalToken])
 
 
-    const getOption = (data) =>{
-        return {
-            tooltip: {
-                trigger: 'item',
-
-              },
-              legend: {
-                orient: 'vertical',
-                left: 'left'
-              },
-              series: [
-                {
-                  name: '',
-                  type: 'pie',
-                  radius: '40%',
-                  label:{
-                    normal :{
-                        show:true,
-                        position:'inside',
-                        formatter:'{d}%'
-                    }
-                  },
-                  data:data,
-                //   data: [
-                //     { value: 1048, name: 'Search Engine' },
-                //     { value: 735, name: 'Direct' },
-                //     { value: 580, name: 'Email' },
-                //     { value: 484, name: 'Union Ads' },
-                //     { value: 300, name: 'Video Ads' }
-                //   ],
-                  left: 100,
-                  top:-80,
-                  emphasis: {
-                    itemStyle: {
-                      shadowBlur: 10,
-                      shadowOffsetX: 0,
-                      shadowColor: 'rgba(0, 0, 0, 0.5)'
-                    }
-                  }
-                }
-              ]
+    useEffect(()=>{
+        if( typeof account == 'undefined' || account == ''){
+            Navigate('/WalletConfirm');
         }
+        getBalance();     
+    },[])
+
+    const clear = () => {
+        setTotalUsdt(0);
+        setTotalToken(0);
+        setInputToken(0);
+        setInputPrice(0);
+        setOutToken(0); 
+        setOutPrice(0);
     }
-   
-   
 
     const handleChange = async (value) => {
+        clear();
         let r = formatAddressByChain(account,value);
         if(value == 1284){
             setAddress(ethAddress);
@@ -150,16 +179,28 @@ function Dashboard(props) {
             setAddress(r);
         } 
         setSeed(value);
-        knownSubstrate.map(item => {
+        knownSubstrate.map( async(item) => {
           if(item.prefix === value * 1){ 
-            setTotalToken( tokenStroe[item.symbols[0]]);
-            const t = ( tokenStroe[item.symbols[0]]  * 1 ) * ( usdtsStroe[item.symbols[0]] * 1) ;
+            let { data: { free: previousFree }, nonce: previousNonce } = await queryBalance(address,item.rpc);
+            const _free =  (previousFree/ decimals[item.symbols[0]] * 1).toFixed(2) ;
+            setTotalToken(_free);
+            const t = ( _free  * 1 ) * ( usdtsStroe[item.symbols[0]] * 1) ;
             setTotalUsdt(t.toFixed(2));
           }
         })
-
     }
-  
+    const chartblance = async(prefix,rpc) => {
+        let newAdd = formatAddressByChain(account,prefix);
+        if(prefix === 1284){
+            newAdd = ethAddress;
+        }
+        let { data: { free: previousFree }, nonce: previousNonce } = await queryBalance(newAdd,rpc);
+        const _free =  (previousFree/ decimals[symbols[prefix]] * 1).toFixed(2) ;
+        if(tokens[symbols[prefix]] == 0){
+            data.push({value:_free,name:symbols[prefix]})
+        }
+        tokens[symbols[prefix]] = 1;
+    }
     const getBalance = async()=>{
         setSeed(0) ;
         if( typeof account == 'undefined' || account == ''){
@@ -181,32 +222,34 @@ function Dashboard(props) {
             usdts['ASTR'] = item.astar.usd.toFixed(2);
             usdts['PHA'] = item.pha.usd.toFixed(2);
             usdts['LIT'] = item.litentry.usd.toFixed(2);
-
             setUsdtsStroe(usdts);
-
-            await Talisman.connect({ chains: [0, 2, 10,1284,5] }).then(r => {
-          
-            });
-            let newData = [];
-            await Talisman.balances([account]).then(obj => {
-                obj.map((item) => {
-                    const _free =  (item.free / decimals[item.token] * 1).toFixed(2) ;
-                    tokens[item.token] = _free * 1;
-                    newData.push({value:_free,name:item.token})
-
-                })
-                setData(newData);
-            })
-            setTokenStroe(tokens);
-           
+            await Promise.all([chartblance(0,rpcs[0]),chartblance(2,rpcs[2]),chartblance(10,rpcs[10]),chartblance(1284,rpcs[1284]),chartblance(5,rpcs[5]),chartblance(30,rpcs[30]),chartblance(31,rpcs[31])]);
+            updateOptions();
             let r = formatAddressByChain(account,0);
             setAddress(r);
             setTotalToken( tokens['DOT']);
-            const t = ( tokens['DOT']  * 1 ) * ( usdts['DOT'] * 1) ;
+            const t = ( tokens['DOT']  * 1 ) * ( usdts['DOT'] * 1) ;    
             setTotalUsdt(t.toFixed(2));
-
-            getTransList();
         });
+    }
+
+
+    
+
+    const updateOptions = () =>{
+        // setOptions(config);
+        console.log('updateOptions')
+        // if(flag){
+            console.log("config" + config)
+            console.log("data" + data)
+            let newOption = cloneDeep(config);
+            console.log(newOption);
+            newOption.series[0].data = [];
+            newOption.series[0].data = data ;
+            setOptions(newOption);
+
+            setLoading(false);
+        // }
     }
 
     const getTransList = async() =>{
@@ -221,8 +264,8 @@ function Dashboard(props) {
             setOutToken(outTotal);
             setOutPrice(outPrice);
 
-            setInputToken( totalToken - outTotal < 0?0: (totalToken - outTotal).toFixed(2));
-            setInputPrice(totalUsdt - outPrice < 0?0:(totalUsdt - outPrice).toFixed(2));
+            setInputToken( totalToken - outTotal < 0 ? 0: (totalToken - outTotal).toFixed(2));
+            setInputPrice(totalUsdt - outPrice < 0 ? 0:(totalUsdt - outPrice).toFixed(2));
             const newData = res.slice(0,5);
             setRecord(newData)
         });
@@ -249,7 +292,7 @@ function Dashboard(props) {
                                 <Select className='select_main' defaultValue={0} style={{ width: 200 }} onChange={handleChange}>
                                 {
                                     knownSubstrate.map(item=>{
-                                    return <Option value={item.prefix} key={item.prefix}>{item.displayName}</Option>
+                                    return <Option value={item.prefix} key={item.prefix}>{item.symbols[0]}( {item.displayName} )</Option>
                                     })
                                 }
                                 </Select>
@@ -270,8 +313,11 @@ function Dashboard(props) {
                                 <span>Total Output</span>
                             </li>
                             <li className="token">
+                                
                                 <span>{inputToken}</span>
                                 <span>{outToken}</span>
+                                
+
                             </li>
                             <li>
                                 <span>$ {inputPrice}</span>
@@ -284,15 +330,20 @@ function Dashboard(props) {
                         <div className='head' >
                             <p>Polkadot Assets Pie Chart</p>
                         </div>
+
+                        <Spin spinning={loading} delay={500}>
+                           
+                        </Spin>
+                        <ReactEcharts notMerge={true} className={'react_for_echarts'}  option={options} />
                         {/* <div className="chart">
                           
                         
                         </div> */}
-                          <ReactEcharts option={getOption(data)} />
+                        {/* <div id="main" style={{flex: 1, height: '400px', width: '700px'}}></div> */}
+                          
                 </div>
 
                 <div className="fil_recent_trans">
-
                         <div className='head'   >
                             <p>Recent Transactions</p>
                             <img src={btn_more_img} onClick={moreNavigate} className="btn_more"/>

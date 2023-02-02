@@ -18,7 +18,7 @@ const { TransferService }  = require("../../store/transfer");
 
 const UserInfo = (props) => {
     const useLocations= useLocation()
-    const { account,address,seed,setAddress,ethAddress,setethAddress} = props;
+    const { account,address,seed,setSeed, setAddress,ethAddress,setethAddress} = props;
     const Navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalTransVisible, setIsModalTransVisible] = useState(false);
@@ -65,6 +65,7 @@ const UserInfo = (props) => {
       };
     
       const handleChange = async (value) => {
+        setBalances(0);
         let r = formatAddressByChain(account,value);
         console.log(r)
         if(value == 1284){
@@ -74,6 +75,8 @@ const UserInfo = (props) => {
             setAddress(r);
             setSeed(value);
         } 
+
+        console.log(seed);
     }
 
       const handleOk = () => {
@@ -193,7 +196,7 @@ const UserInfo = (props) => {
         }
        
         let r = accountsExport(address,exportPasswords);
-        funDownload(JSON.stringify(r), `${address}.json`);
+        funDownload(JSON.stringify(r), `${symbols[seed]}-${address}.json`);
         setIsModalPasswordVisible(false);
     }
     const funDownload = (content, filename) => {
@@ -228,7 +231,7 @@ const UserInfo = (props) => {
         }
         console.log('seed' + seed);
         getBalance(seed);
-    },[account])
+    },[address])
 
     const receiveChange=(e)=>{
         setReceiveAddress(e.target.value);
@@ -257,7 +260,7 @@ const UserInfo = (props) => {
                     <Select className='select_main' defaultValue={seed?seed:knownSubstrate[0].prefix} style={{ width: 200 }} onChange={handleChange}>
                        {
                            knownSubstrate.map(item=>{
-                           return <Option value={item.prefix} key={item.prefix}>{item.displayName}</Option>
+                           return <Option value={item.prefix} key={item.prefix}>{item.symbols[0]}( {item.displayName} )</Option>
                            })
                        }
                     </Select>
