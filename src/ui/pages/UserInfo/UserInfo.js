@@ -59,6 +59,11 @@ const UserInfo = (props) => {
 
     };
       const showModalSend = () => {
+        if(seed == 31){
+           
+            message.error(' Inquiry only ');
+            return;
+        }
         setIsModalOpen(true);
         setSelectTab(2);
         clearinput();

@@ -114,7 +114,12 @@ function Dashboard(props) {
     const config = {
         tooltip: {
            trigger: 'item',
-
+           formatter:function(params){
+                var pirm = usdts[params.data.name];
+                if(!isNaN(pirm)){
+                    return '<div>'+params.data.name + ':' + (params.data.value * pirm).toFixed(2) + '</div>';
+                }
+           }
          },
          legend: {
            orient: 'vertical',
@@ -237,19 +242,11 @@ function Dashboard(props) {
     
 
     const updateOptions = () =>{
-        // setOptions(config);
-        console.log('updateOptions')
-        // if(flag){
-            console.log("config" + config)
-            console.log("data" + data)
             let newOption = cloneDeep(config);
-            console.log(newOption);
             newOption.series[0].data = [];
             newOption.series[0].data = data ;
             setOptions(newOption);
-
             setLoading(false);
-        // }
     }
 
     const getTransList = async() =>{
@@ -262,7 +259,6 @@ function Dashboard(props) {
                 outPrice += item.balance * usdtsStroe[item.symbols] * 1
             })
             setOutToken(outTotal);
-            setOutPrice(outPrice);
 
             setInputToken( totalToken - outTotal < 0 ? 0: (totalToken - outTotal).toFixed(2));
             setInputPrice(totalUsdt - outPrice < 0 ? 0:(totalUsdt - outPrice).toFixed(2));
@@ -303,7 +299,7 @@ function Dashboard(props) {
                             </tr>
 
                             <tr>
-                                <td colSpan="3" className="td_money_numer td_number_padding">$ {totalUsdt}</td>
+                                <td colSpan="3" className="td_money_numer td_number_padding">$ {isNaN(totalUsdt) ? 0 :totalUsdt}</td>
                             </tr>
                         </table>
 
@@ -320,8 +316,8 @@ function Dashboard(props) {
 
                             </li>
                             <li>
-                                <span>$ {inputPrice}</span>
-                                <span>$ {outPrice}</span>
+                                <span>$ {isNaN(inputPrice) ? 0 :inputPrice}</span>
+                                <span>$ {isNaN(outPrice) ? 0:  outPrice}</span>
                             </li>
                         </ul>
                 </div>

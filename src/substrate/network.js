@@ -70,6 +70,7 @@ export const knownSubstrate = [
       website: 'https://astar.network/',
       genesis: ['0x2fc8bb6ed7c0051bdcf4866c322ed32b6276572713607e3297ccf411b8f14aa9'],
       rpc:'wss://rpc.litentry-parachain.litentry.io'
+      
     },
     {
       decimals: 1000000000000,
