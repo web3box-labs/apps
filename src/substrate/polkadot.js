@@ -166,11 +166,7 @@ function seedValidate (data) {
  }
 
  // jsonstore import 
- function jsonRestore (data) {
-   let {
-      json,
-      newPass
-   } = data;
+ export function jsonRestore (json,newPass) {
    try {
       _uiKeyring.restoreAccount(json, newPass);
       return true;
