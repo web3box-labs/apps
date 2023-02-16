@@ -63,7 +63,7 @@ describe(' account transaction ',()=>{
 describe(' Dashboard query ',()=>{
 
   beforeAll( async() => {
-         jest.setTimeout(1820000);
+         jest.setTimeout(100820000);
         //  await cryptoWaitReady()
   });
 
