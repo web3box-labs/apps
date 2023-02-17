@@ -1,10 +1,9 @@
-import React, { useState,useEffect } from "react";
+import React, {useEffect } from "react";
 import './Risk.scss';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { setAccount, setPrivateKey} from '../../store/action';
 import { useNavigate } from 'react-router-dom';
 import riks_logo from '../../images/risk_logo.png';
-import { Button, Select, message, Input,Modal } from 'antd';
 
 const Risk = (props) => {
     const { account,privateKey} = props;

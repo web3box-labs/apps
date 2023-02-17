@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import './UserInfo.scss';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { setAccount, setPrivateKey, setSeed,setAddress,setethAddress } from '../../store/action';
+import { connect } from 'react-redux';
+import { setAccount, setSeed,setAddress,setethAddress } from '../../store/action';
 import { useNavigate,useLocation } from 'react-router-dom';
 import Loding from '../../images/loding.png';
 import Success from '../../images/success.png';

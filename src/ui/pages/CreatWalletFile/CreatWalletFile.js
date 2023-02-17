@@ -1,6 +1,6 @@
 import React, { useContext,useEffect } from "react";
 import './CreatWalletFile.scss';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { setAccount, setSeed } from '../../store/action';
 // import SuperChain from '../SuperChain/SuperChain'
 import Warring from '../../images/warring.png';

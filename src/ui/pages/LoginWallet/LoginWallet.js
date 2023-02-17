@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import './LoginWallet.scss';
 //react-redux
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { setAccount, setSeed ,setethAddress, setAddress,setPrivateKey} from '../../store/action';
-import { mnemonicGenerate,seedCreateAddress,saveAccountsCreate} from "../../../substrate/polkadot.js";
+import { connect } from 'react-redux';
+import { setAccount, setSeed ,setethAddress, setAddress} from '../../store/action';
+import { seedCreateAddress,saveAccountsCreate} from "../../../substrate/polkadot.js";
 import { useNavigate } from 'react-router-dom';
 import Top from '../../images/spile_left.png';
-import { Button, message,Select, Upload,Input,Modal } from 'antd';
-
-
+import { Button, message,Input,Modal } from 'antd';
 const { TextArea } = Input;
-const { Option } = Select;
+
+
 function LoginWallet(props){
     const { setAccount,setethAddress, dispatch} = props
     const [isModalVisible, setIsModalVisible] = useState(true);

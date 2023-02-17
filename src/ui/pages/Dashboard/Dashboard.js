@@ -1,13 +1,12 @@
-import React, { useState,useEffect,useRef } from "react";
+import React, { useState,useEffect } from "react";
 import './Dashboard.scss';
-import { connect ,useDispatch, useSelector} from 'react-redux';
+import { connect } from 'react-redux';
 import { useNavigate,useLocation } from 'react-router-dom';
-import Talisman from '@talismn/api'
-import {parseTime,queryBalance,queryHttpBalance,formatAddressByChain} from "../../../substrate/polkadot.js";
+import {queryBalance,formatAddressByChain} from "../../../substrate/polkadot.js";
 import {tokenPrice} from "../../../substrate/risk.js";
 import {knownSubstrate} from '../../../substrate/network'
 import { setAccount,setSeed,setAddress,setethAddress } from '../../store/action';
-import { Button ,Select,Input,Modal,messag,Card,Spin} from 'antd';
+import {Select,Spin} from 'antd';
 import {
     cloneDeep} from 'lodash';
 import dashboard_img from '../../images/dashboard.png';
@@ -20,10 +19,6 @@ import glmr_img from '../../images/glmr.png';
 import astr_img from '../../images/astr.png';
 import pha_img from '../../images/pha.png';
 import lit_img from '../../images/lit.png';
-import icon_btc_img from '../../images/icon_btc.png';
-import icon_eth_img from '../../images/icon_eth.png';
-import icon_fil_img from '../../images/icon_fil.png';
-import recent_trans_img from '../../images/recent_trans.png';
 import btn_more_img from  '../../images/btn_more.png';
 import market_head_img from  '../../images/market_head.png';
 import * as echarts from 'echarts';

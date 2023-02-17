@@ -10,11 +10,8 @@ import './Menu.scss';
 import {  Spin  } from 'antd';
 import logo from '../../images/web3box.png';
 import logout_img from '../../images/logout.png';
-import ipfs_img from '../../images/ipfs.png';
-import Loding from '../../images/loding.png';
 import { connect} from 'react-redux';
 import { setAccount, setAddress, setPrivateKey} from '../../store/action';
-import axios from 'axios';
 
 
 const SiderMenu = (props) => {

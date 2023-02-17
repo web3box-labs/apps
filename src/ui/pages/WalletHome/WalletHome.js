@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import './WalletHome.scss';
 //react-redux
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { setAccount, setSeed,setAddress,setethAddress,setUserimg } from '../../store/action';
+import { connect } from 'react-redux';
+import { setAccount, setSeed,setAddress,setethAddress } from '../../store/action';
 import { useNavigate } from 'react-router-dom';
 import UserInfo from '../UserInfo/UserInfo'
 import statu_pending from '../../images/pending.png';
 import statu_success from '../../images/success_status.png';
-import { Button, Spin ,message,Pagination} from 'antd';
-import axios  from 'axios';
+import {  Spin ,message} from 'antd';
+
 const { TransferService }  = require("../../store/transfer");
 
 const WalletHome = (props) => {

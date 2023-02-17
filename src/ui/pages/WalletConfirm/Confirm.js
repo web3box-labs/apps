@@ -1,8 +1,8 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import './Confirm.scss';
-import { connect ,useDispatch, useSelector} from 'react-redux';
+import { connect} from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Button, Select, message, Input,Modal } from 'antd';
+import { Button,Modal } from 'antd';
 import { setAccount,setSeed } from '../../store/action';
 
 

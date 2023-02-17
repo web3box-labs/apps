@@ -1,15 +1,15 @@
 import React, { useState, useEffect ,createContext} from "react";
 import './CreatWallte.scss';
 //react-redux
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { setAccount, setSeed ,setPrivateKey, setAddress, setethAddress} from '../../store/action';
+import { connect } from 'react-redux';
+import { setAccount, setAddress, setethAddress} from '../../store/action';
 import { useNavigate } from 'react-router-dom';
 import Top from '../../images/spile_left.png';
 import Warring from '../../images/warring.png';
 import CreatWalletFile from '../CreatWalletFile/CreatWalletFile'
-import { Button, Select, message,Modal} from 'antd';
+import { Button, message,Modal} from 'antd';
 import { mnemonicGenerate,seedCreateAddress,saveAccountsCreate} from "../../../substrate/polkadot.js";
-const { Option } = Select;
+
 export const CreatWalletContext = createContext({});
 
 
