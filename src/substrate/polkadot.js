@@ -22,7 +22,6 @@ const SEED_DEFAULT_LENGTH = 12;
 const ETH_DERIVE_DEFAULT = "/m/44'/60'/0'/0/0";
 let provider,polkadotApi;
 
-// 日期格式化
 export function parseTime(time, pattern) {
 	if (arguments.length === 0 || !time) {
 		return null
